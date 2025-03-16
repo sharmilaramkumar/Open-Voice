@@ -1,0 +1,144 @@
+     /* Reset default styles */
+     * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+    
+    body {
+        font-family: 'Segoe UI', Arial, sans-serif;
+        line-height: 1.6;
+        background-color: #f5f6fa;
+        color: #333;
+    }
+    
+    /* Header Styles */
+    
+    /* Table Styles */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+    
+    thead {
+        background: #2c3e50;
+        color: white;
+    }
+    
+    th {
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+    }
+    
+    tbody tr {
+        border-bottom: 1px solid #eee;
+        transition: background-color 0.2s ease;
+    }
+    
+    tbody tr:hover {
+        background-color: #f8f9fd;
+    }
+    
+    td {
+        padding: 1rem;
+        vertical-align: middle;
+    }
+    
+    td a {
+        color: #3498db;
+        text-decoration: none;
+        transition: color 0.2s ease;
+    }
+    
+    td a:hover {
+        color: #2980b9;
+        text-decoration: underline;
+    }
+    
+    /* Status Colors */
+    td:contains('Approved') {
+        color: #27ae60;
+        font-weight: 500;
+    }
+    
+    td:contains('Rejected') {
+        color: #c0392b;
+        font-weight: 500;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 768px) {
+        .header {
+            flex-direction: column;
+            padding: 1rem;
+        }
+    
+        nav {
+            flex-direction: column;
+            width: 100%;
+            margin-top: 1rem;
+            gap: 0.5rem;
+        }
+    
+        nav a {
+            width: 100%;
+            text-align: center;
+        }
+    
+        .container {
+            padding: 0 1rem;
+        }
+    
+        table {
+            display: block;
+            overflow-x: auto;
+        }
+    
+        th, td {
+            min-width: 150px;
+        }
+    }
+    
+    /* Animations */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .container {
+        animation: fadeIn 0.5s ease-out;
+    }
+    
+    /* Button-like Links in Table */
+    td a[href*="update_status"] {
+        padding: 0.3rem 0.8rem;
+        border-radius: 4px;
+        margin-right: 0.5rem;
+    }
+    
+    td a[href*="Approved"] {
+        background-color: #27ae601a;
+    }
+    
+    td a[href*="Approved"]:hover {
+        background-color: #27ae6033;
+    }
+    
+    td a[href*="Rejected"] {
+        background-color: #c0392b1a;
+    }
+    
+    td a[href*="Rejected"]:hover {
+        background-color: #c0392b33;
+    }
