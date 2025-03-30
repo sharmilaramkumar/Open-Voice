@@ -1,5 +1,9 @@
 <?php
 session_start();
+if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
+    header("Location: login.php");
+    exit();
+}
 $conn = new mysqli('localhost', 'root', '', 'suggestion_box');
 if ($conn->connect_error) {
     die("Connection failed: " . $conn->connect_error);
@@ -56,260 +60,327 @@ $conn->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Register</title>
+    <title>Register - Open Voice</title>
     <script>
         function toggleFields() {
             var role = document.getElementById("role").value;
             var userFields = document.getElementById("userFields");
-            
-            if (role === "user") {
-                userFields.style.display = "block";
-            } else {
-                userFields.style.display = "none";
-            }
+            userFields.style.display = role === "user" ? "block" : "none";
         }
     </script>
     <style>
         * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-body {
-    font-family: 'Segoe UI', Arial, sans-serif;
-    line-height: 1.6;
-    background-color: #f5f6fa;
-    color: #333;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            line-height: 1.6;
+            background: linear-gradient(135deg, #f5f6fa, #e0e7ff);
+            color: #333;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
 
-/* Header Styles */
-header {
-    background: linear-gradient(135deg, #2c3e50, #3498db);
-    padding: 1.5rem 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    position: sticky;
-    top: 0;
-    z-index: 1000;
-}
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
 
-header img {
-    height: 50px;
-    width: auto;
-}
+        header img {
+            height: 50px;
+            width: auto;
+        }
 
-header h1 {
-    color: white;
-    font-size: 1.8rem;
-    font-weight: 600;
-}
+        header h1 {
+            color: white;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
 
-/* Container for Form */
-.container {
-    max-width: 600px;
-    margin: 2rem auto;
-    padding: 2rem;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-}
+        /* Container Styles */
+        .container {
+            max-width: 900px; /* Increased from 700px */
+            margin: 3rem auto;
+            padding: 3rem;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        }
 
-/* Page Heading */
-h1 {
-    text-align: center;
-    color: #2c3e50;
-    font-size: 2rem;
-    margin-bottom: 1rem;
-    border-bottom: 2px solid #3498db;
-    display: inline-block;
-    padding-bottom: 0.5rem;
-}
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 2.5rem;
+            font-weight: 600;
+        }
 
-/* Form Styles */
-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1.2rem;
-}
+        /* Form Styles */
+        form {
+            display: grid;
+            gap: 1.8rem;
+            grid-template-columns: 1fr 1fr; /* Two-column layout */
+        }
 
-label {
-    color: #2c3e50;
-    font-weight: 500;
-}
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
 
-input,
-select {
-    padding: 0.8rem;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 1rem;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-}
+        .full-width {
+            grid-column: span 2; /* Full-width fields */
+        }
 
-input:focus,
-select:focus {
-    border-color: #3498db;
-    box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
-    outline: none;
-}
+        label {
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
 
-button {
-    padding: 0.8rem;
-    background: linear-gradient(135deg, #27ae60, #219653);
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 1.1rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
+        input,
+        select,
+        textarea {
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 1rem;
+            background: #fafafa;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            width: 100%; /* Ensure inputs take full available width */
+        }
 
-button:hover {
-    background: linear-gradient(135deg, #219653, #1b8047);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(39, 174, 96, 0.4);
-}
+        input:focus,
+        select:focus,
+        textarea:focus {
+            border-color: #3498db;
+            box-shadow: 0 0 8px rgba(52, 152, 219, 0.2);
+            outline: none;
+            background: white;
+        }
 
-button:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 8px rgba(39, 174, 96, 0.3);
-}
+        button {
+            padding: 1.2rem;
+            background: linear-gradient(135deg, #27ae60, #219653);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            grid-column: span 2; /* Button spans full width */
+        }
 
-/* Error Message */
-p[style*='color:red;'] {
-    background: #f2dede;
-    color: #a94442;
-    padding: 0.8rem;
-    border: 1px solid #ebccd1;
-    border-radius: 5px;
-    text-align: center;
-}
+        button:hover {
+            background: linear-gradient(135deg, #219653, #1b8047);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(39, 174, 96, 0.3);
+        }
 
-/* Footer */
-footer {
-    color: white;
-    text-align: center;
-    padding: 1rem;
-    margin-top: auto;
-    box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
-}
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(39, 174, 96, 0.2);
+        }
 
-/* Responsive Design */
-@media (max-width: 768px) {
-    header {
-        flex-direction: column;
-        text-align: center;
-    }
+        /* User Fields Section */
+        #userFields {
+            grid-column: span 2; /* Full width for user fields */
+            padding-top: 1rem;
+            border-top: 1px solid #eee;
+            display: grid;
+            gap: 1.8rem;
+            grid-template-columns: 1fr 1fr;
+        }
 
-    .container {
-        margin: 1rem;
-        padding: 1.5rem;
-    }
+        /* Error Message */
+        .error-message {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 500;
+            border: 1px solid #f5c6cb;
+            margin-bottom: 1.5rem;
+            grid-column: span 2;
+        }
 
-    h1 {
-        font-size: 1.8rem;
-    }
+        /* Footer */
+        footer {
+            background: linear-gradient(135deg, #2c3e50, #3498db);
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            margin-top: auto;
+            box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);
+        }
 
-    input,
-    select,
-    button {
-        padding: 0.7rem;
-    }
-}
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                max-width: 100%;
+                margin: 1.5rem;
+                padding: 2rem;
+            }
 
-@media (max-width: 480px) {
-    header h1 {
-        font-size: 1.5rem;
-    }
+            form {
+                grid-template-columns: 1fr; /* Single column on smaller screens */
+            }
 
-    header img {
-        height: 40px;
-    }
+            #userFields {
+                grid-template-columns: 1fr;
+            }
 
-    .container {
-        padding: 1rem;
-    }
+            h1 {
+                font-size: 2rem;
+            }
 
-    h1 {
-        font-size: 1.5rem;
-    }
-}
+            button {
+                padding: 1rem;
+            }
+        }
 
-</style>
+        @media (max-width: 480px) {
+            header {
+                flex-direction: column;
+                padding: 1rem;
+                text-align: center;
+            }
+
+            header h1 {
+                font-size: 1.5rem;
+            }
+
+            header img {
+                height: 40px;
+            }
+
+            .container {
+                padding: 1.5rem;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            label {
+                font-size: 1rem;
+            }
+
+            input,
+            select,
+            textarea {
+                padding: 0.8rem;
+            }
+
+            button {
+                font-size: 1.1rem;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .container {
+            animation: fadeIn 0.5s ease-out;
+        }
+    </style>
 </head>
 <body>
-<header>
-        <h1>
-            Open Voice
-        </h1>
+    <header>
+        <h1>Open Voice</h1>
         <img src="logo.png" alt="header-logo">
     </header>
 
-    <h1>Register</h1>
-    <?php if (isset($error_message)) { echo "<p style='color:red;'>$error_message</p>"; } ?>
-<div class="container">
-    <form action="register.php" method="POST">
-        <label for="role">Role:</label>
-        <select id="role" name="role" required onchange="toggleFields()">
-            <option value="user">User</option>
-            <option value="admin">Admin</option>
-        </select>
-        
-        <label for="name">Name:</label>
-        <input type="text" id="name" name="name" required>
-
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" required>
-
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" required>
-
-        <label for="confirm_password">Confirm Password:</label>
-        <input type="password" id="confirm_password" name="confirm_password" required>
-
-        <label for="email">Email:</label>
-        <input type="email" id="email" name="email" required>
-
-        <label for="address">Address:</label>
-        <input type="text" id="address" name="address">
-
-        <label for="phone_number">Phone Number:</label>
-        <input type="text" id="phone_number" name="phone_number">
-
-        <label for="age">Age:</label>
-        <input type="number" id="age" name="age" required>
-
-        <label for="dob">Date of Birth:</label>
-        <input type="date" id="dob" name="dob" required>
-
-        <div id="userFields" style="display:block;">
-            <label for="roll_number">Roll Number:</label>
-            <input type="text" id="roll_number" name="roll_number">
-<br>
-            <label for="department">Department:</label>
-            <select id="department" name="department">
-                <option value="cs">Computer Science</option>
-                <option value="ca">Computer Application</option>
-                <option value="ma">Maths</option>
-                <option value="eng">English</option>
-                <option value="diff">Defence</option>
-                <option value="bba">BBA</option>
-                <option value="bcom">B.Com</option>
-            </select>
-        </div>
-
-        <button type="submit">Register</button>
-    </form>
+    <div class="container">
+        <h1>Register</h1>
+        <?php if (isset($error_message)): ?>
+            <div class="error-message"><?php echo $error_message; ?></div>
+        <?php endif; ?>
+        <form action="register.php" method="POST">
+            <div class="form-group">
+                <label for="role">Role</label>
+                <select id="role" name="role" required onchange="toggleFields()">
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <label for="confirm_password">Confirm Password</label>
+                <input type="password" id="confirm_password" name="confirm_password" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group full-width">
+                <label for="address">Address</label>
+                <textarea id="address" name="address" rows="5"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="phone_number">Phone Number</label>
+                <input type="text" id="phone_number" name="phone_number">
+            </div>
+            <div class="form-group">
+                <label for="age">Age</label>
+                <input type="number" id="age" name="age" required>
+            </div>
+            <div class="form-group">
+                <label for="dob">Date of Birth</label>
+                <input type="date" id="dob" name="dob" required>
+            </div>
+            <div id="userFields" class="form-group">
+                <div class="form-group">
+                    <label for="roll_number">Roll Number</label>
+                    <input type="text" id="roll_number" name="roll_number">
+                </div>
+                <div class="form-group">
+                    <label for="department">Department</label>
+                    <select id="department" name="department">
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="Computer Application">Computer Application</option>
+                        <option value="Maths">Maths</option>
+                        <option value="English">English</option>
+                        <option value="Defence">Defence</option>
+                        <option value="BBA">BBA</option>
+                        <option value="B.Com">B.Com</option>
+                    </select>
+                </div>
+            </div>
+            <button type="submit">Register</button>
+        </form>
     </div>
-    <footer style="background:linear-gradient(135deg, #2c3e50, #3498db);     color: #fff; text-align: center; padding: 1rem; margin-top: auto; box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.1);">
-        <p>&copy; <?php echo date('Y'); ?> Open Voice. All rights reserved.</p>
+
+    <footer>
+        <p>© <?php echo date('Y'); ?> Open Voice. All rights reserved.</p>
     </footer>
 </body>
 </html>
