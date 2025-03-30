@@ -197,7 +197,6 @@ footer {
         <table>
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Username</th>
                     <th>Email</th>
                     <th>Role</th>
@@ -207,7 +206,6 @@ footer {
             <tbody>
                 <?php while ($row = $result->fetch_assoc()): ?>
                     <tr>
-                        <td><?php echo $row['id']; ?></td>
                         <td><?php echo $row['username']; ?></td>
 <td>No email available</td>
 
